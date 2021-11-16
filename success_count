@@ -1,0 +1,29 @@
+# importing datetime module
+from datetime import datetime
+
+# importing pandas as pd
+import pandas as pd
+
+# reading the sample.log file
+data = pd.read_csv('sample.log', sep=" ", header=None)
+
+# defining the column headers
+data.columns = ["date", "time", "Request", "region", "count"]
+
+# combining both Time and Date fields together
+data["Date_Time"] = data["date"] + " " + data["time"]
+
+# Converting string to datetime format
+data["Date_Time"]= pd.to_datetime(data['Date_Time'])
+
+# rounding off time to the nearest hour
+data["Date_Time"]=data["Date_Time"].dt.round("60min")
+
+#reading the count column with success responses alone
+new_data = data.loc[data["count"] == "success=1"]
+
+# Grouping the data based on time and Request type
+n_by_request = new_data.groupby(["Date_Time","Request"])["count"].count()
+
+# printing the output
+print n_by_request
